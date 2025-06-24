@@ -1,0 +1,63 @@
+Если скрипт не работает, что может происходить с коробки например на Астре и некоторых версиях Альта
+
+1) Проверяем установлен ли iptables, если нет ставим
+sudo iptables --version
+
+AltLunux:
+На Альте всё просто, ставим пакет судо, обычно на этом приколы заканчиваются:
+2) apt-get install sudo
+3) Настройка судо
+3.1) nano /etc/sudoers
+3.2) Смотрим есть ли у root права sudo, если нет раскомментируем/добавляем строку:
+root ALL=(ALL:ALL) ALL
+3.3) При необходимости можем выдать права sudo другим пользователям аналогичным образом:
+testuser ALL=(ALL:ALL) ALL
+
+AstraLinux:
+2) Проверяем, где уставновлен iptables
+which iptables
+Если получаем что-то похожее, то проблема в path
+"which: no iptables in (/home/user/bin:/usr/local/bin:/usr/bin:/bin:/usr/games)"
+3) Ищем все пути c iptables используемые ОС
+sudo find / -name iptables
+Получаем что-то в виде:
+////////////////////////////////////////////////////////////////////////////////////////
+find: ‘/run/user/500/gvfs’: Отказано в доступе
+/etc/rc.d/init.d/iptables
+/etc/sysconfig/iptables
+/etc/net/ifaces/default/fw/iptables
+/sbin/iptables
+/usr/share/bash-completion/completions/iptables
+/usr/share/iptables
+/usr/share/doc/etcnet-0.9.28/examples/firewall-hiddenman/ifaces/default/fw/iptables
+/usr/share/doc/etcnet-0.9.28/examples/ADSL-Bandwidth-HOWTO/ppp0/fw/iptables
+/usr/share/doc/etcnet-0.9.28/examples/OpenVPN-TAP/i0060756/fw/iptables
+/usr/share/doc/etcnet-0.9.28/examples/OpenVPN-to-satellite/ifaces/sc7am1/fw/iptables
+/usr/share/doc/etcnet-0.9.28/examples/OpenVPN-to-satellite/ifaces/sat/fw/iptables
+/usr/share/doc/etcnet-0.9.28/examples/Complex-without-QoS/ifaces/ppp0/fw/iptables
+/usr/share/doc/etcnet-0.9.28/examples/Complex-without-QoS/ifaces/default/fw/iptables
+/usr/share/doc/etcnet-0.9.28/examples/Complex-without-QoS/ifaces/ukrtel-shdsl/fw/iptables
+/usr/share/doc/etcnet-0.9.28/examples/Complex-without-QoS/ifaces/dvb0_0/fw/iptables
+/usr/share/doc/etcnet-0.9.28/examples/Complex-without-QoS/ifaces/ppp20/fw/iptables
+/usr/share/doc/etcnet-0.9.28/examples/Complex-without-QoS/ifaces/office-net/fw/iptables
+/lib64/iptables
+////////////////////////////////////////////////////////////////////////////////////////
+Нас интересует путь установки iptables, в данном случае это /sbin/iptables
+4) Редактируем переменную окружения Path
+4.1) nano ~/.bashrc
+4.2) В самый конец файла вставляем строку аналогичную строке ниже, пример для iptables, установленной в /sbin:
+export PATH=$PATH:/sbin
+Пример исправленного файла:
+/////////////////////////////////////////////////////
+# ~/.bashrc
+# The individual per-interactive-shell startup file.
+# Source global definitions.
+if [ -r /etc/bashrc ]; then
+        . /etc/bashrc
+fi
+# Define user specific aliases and functions.
+export PATH=$PATH:/sbin
+/////////////////////////////////////////////////////
+4.3) После сохранения необходимо применить изменения в файле:
+source ~/.bashrc
+Теперь, когда папка /sbin или иная, содержащая iptables, добавлена в переменную окружения Path, при вызове скрипта не должно появляться ошибок нахождения пакета iptables
