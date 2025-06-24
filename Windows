@@ -1,0 +1,18 @@
+# Массив TCP портов
+$tcpPorts = @(80, 8043, 9615, 16550, 502,which iptables
+ 30550, 40555, 31550, 30750, 102, 123, 2404, 5432, 1433, 30501)
+
+# Массив UDP портов
+$udpPorts = @(30550, 40555)
+
+# Цикл для добавления правил для каждого TCP порта
+foreach ($port in $tcpPorts) {
+    New-NetFirewallRule -DisplayName "Open TCP Port $port Inbound" -Direction Inbound -Protocol TCP -LocalPort $port -Action Allow
+    New-NetFirewallRule -DisplayName "Open TCP Port $port Outbound" -Direction Outbound -Protocol TCP -LocalPort $port -Action Allow
+}
+
+# Цикл для добавления правил для каждого UDP порта
+foreach ($port in $udpPorts) {
+    New-NetFirewallRule -DisplayName "Open UDP Port $port Inbound" -Direction Inbound -Protocol UDP -LocalPort $port -Action Allow
+    New-NetFirewallRule -DisplayName "Open UDP Port $port Outbound" -Direction Outbound -Protocol UDP -LocalPort $port -Action Allow
+}
